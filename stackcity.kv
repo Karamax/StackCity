@@ -1,0 +1,50 @@
+CityGame:
+
+<FieldCell>:
+    size: 50, 50
+    size_hint: None, None
+    canvas:
+        Color:
+            rgba: 0, .4, .4, .4
+        Rectangle:
+            size: self.size
+            pos: self.pos
+    Label:
+        text: 'ASD'
+        center: root.center
+
+<CityGame>:
+    canvas:
+        Color:
+            rgba: 1, .3, .8, .5
+        Rectangle:
+            pos: root.pos
+            size: root.size
+    size: root.size
+    pos: root.pos
+    BoxLayout:
+        orientation: 'horizontal'
+        spacing: 10
+        size: root.size
+        pos: root.pos
+        PlayingField:
+            id: field
+            size: 600, 600 # rm hardcode later
+            size_hint: None, None
+            cols: self.field_size
+            rows: self.field_size
+            canvas.before:
+                Color:
+                    rgba: 0.4, 0.4, 0.4, 1
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+        Label:
+            size_x: 100
+            canvas.before:
+                Color:
+                    rgba: 0.4, 0.4, 0.4, 1
+                Rectangle:
+                    pos: self.pos
+                    size: self.size
+            text: 'Here be buttons'
