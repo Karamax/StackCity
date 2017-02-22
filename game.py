@@ -38,6 +38,35 @@ class FieldCell(Widget):
         super(FieldCell, self).__init__(**kwargs)
 
 
+class GrabbableCell(FieldCell):
+    """
+    A cell subclass that can be dragged around
+    """
+
+    def on_touch_down(self, touch):
+        if self.x < touch.x < self.x+self.width and\
+                self.y < touch.y < self.y+self.height:
+            touch.grab(self)
+
+    def on_touch_move(self, touch):
+        if touch.grab_current is self:
+            self.center = touch.x, touch.y
+
+    def on_touch_up(self, touch):
+        if touch.grab_current is self:
+            touch.ungrab(self)
+
+
+class ItemMakerWidget(GridLayout):
+    """
+    A window where the new item is spawned
+    """
+
+    def __init__(self, **kwargs):
+        super(ItemMakerWidget, self).__init__(**kwargs)
+        self.add_widget(GrabbableCell(Cell()))
+
+
 class RightBlock(BoxLayout):
     pass
 

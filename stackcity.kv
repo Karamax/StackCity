@@ -1,3 +1,4 @@
+
 CityGame:
 
 <FieldCell>:
@@ -13,6 +14,9 @@ CityGame:
         text: str(root.cell.ground)
         center: root.center
 
+<GrabbableCell>:
+    size: 50, 50
+
 <RightBlock>:
     size_x: 100
     canvas.before:
@@ -23,20 +27,19 @@ CityGame:
             pos: self.pos
     orientation: 'vertical'
     padding: 10
-    GridLayout:
-        cols: 1
-        rows: 1
+    spacing: 10
+    ItemMakerWidget:
+        canvas.before:
+            Color:
+                rgba: 0.2, 0.2, 0.2, 1
+            Rectangle:
+                size: self.size
+                pos: self.pos
         padding: 10
-        Label:
-            canvas.before:
-                Color:
-                    rgba: 0.2, 0.2, 0.2, 1
-                Rectangle:
-                    size: self.size
-                    pos: self.pos
-            size: 150, 150
-            size_hint: None, None
-            text: 'Here will be an item'
+        rows: 1
+        cols: 1
+        size: 150, 150
+        size_hint: None, None
     Label:
         canvas.before:
             Color:
