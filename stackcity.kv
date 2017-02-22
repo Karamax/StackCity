@@ -13,6 +13,41 @@ CityGame:
         text: str(root.cell.ground)
         center: root.center
 
+<RightBlock>:
+    size_x: 100
+    canvas.before:
+        Color:
+            rgba: 0.4, 0.4, 0.4, 1
+        Rectangle:
+            size: self.size
+            pos: self.pos
+    orientation: 'vertical'
+    padding: 10
+    GridLayout:
+        cols: 1
+        rows: 1
+        padding: 10
+        Label:
+            canvas.before:
+                Color:
+                    rgba: 0.2, 0.2, 0.2, 1
+                Rectangle:
+                    size: self.size
+                    pos: self.pos
+            size: 150, 150
+            size_hint: None, None
+            text: 'Here will be an item'
+    Label:
+        canvas.before:
+            Color:
+                rgba: 0.2, 0.2, 0.2, 1
+            Rectangle:
+                size: self.size
+                pos: self.pos
+        text: 'Here will be buttons and stuff'
+
+
+
 <CityGame>:
     canvas:
         Color:
@@ -40,12 +75,4 @@ CityGame:
                 Rectangle:
                     pos: self.pos
                     size: self.size
-        Label:
-            size_x: 100
-            canvas.before:
-                Color:
-                    rgba: 0.4, 0.4, 0.4, 1
-                Rectangle:
-                    pos: self.pos
-                    size: self.size
-            text: 'Here be buttons'
+        RightBlock

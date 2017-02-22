@@ -38,6 +38,10 @@ class FieldCell(Widget):
         super(FieldCell, self).__init__(**kwargs)
 
 
+class RightBlock(BoxLayout):
+    pass
+
+
 class StackCityApp(App):
     pass
 
