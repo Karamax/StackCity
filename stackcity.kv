@@ -10,7 +10,7 @@ CityGame:
             size: self.size
             pos: self.pos
     Label:
-        text: 'ASD'
+        text: root.cell.ground
         center: root.center
 
 <CityGame>:
@@ -31,6 +31,7 @@ CityGame:
             id: field
             size: 600, 600 # rm hardcode later
             size_hint: None, None
+            spacing: 10
             cols: self.field_size
             rows: self.field_size
             canvas.before:
