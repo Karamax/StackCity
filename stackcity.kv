@@ -13,43 +13,10 @@ CityGame:
     Label:
         text: str(root.cell.ground)
         center: root.center
+#    on_touch_down: self.cell.add_item(app.current_item)
 
 <GrabbableCell>:
     size: 50, 50
-
-<RightBlock>:
-    size_x: 100
-    canvas.before:
-        Color:
-            rgba: 0.4, 0.4, 0.4, 1
-        Rectangle:
-            size: self.size
-            pos: self.pos
-    orientation: 'vertical'
-    padding: 10
-    spacing: 10
-    ItemMakerWidget:
-        canvas.before:
-            Color:
-                rgba: 0.2, 0.2, 0.2, 1
-            Rectangle:
-                size: self.size
-                pos: self.pos
-        padding: 10
-        rows: 1
-        cols: 1
-        size: 150, 150
-        size_hint: None, None
-    Label:
-        canvas.before:
-            Color:
-                rgba: 0.2, 0.2, 0.2, 1
-            Rectangle:
-                size: self.size
-                pos: self.pos
-        text: 'Here will be buttons and stuff'
-
-
 
 <CityGame>:
     canvas:
@@ -58,6 +25,7 @@ CityGame:
         Rectangle:
             pos: root.pos
             size: root.size
+    id: citygame
     size: root.size
     pos: root.pos
     BoxLayout:
@@ -78,4 +46,35 @@ CityGame:
                 Rectangle:
                     pos: self.pos
                     size: self.size
-        RightBlock
+        RightBlock:
+            size_x: 100
+            canvas.before:
+                Color:
+                    rgba: 0.4, 0.4, 0.4, 1
+                Rectangle:
+                    size: self.size
+                    pos: self.pos
+            orientation: 'vertical'
+            padding: 10
+            spacing: 10
+            ItemMakerWidget:
+                canvas.before:
+                    Color:
+                        rgba: 0.2, 0.2, 0.2, 1
+                    Rectangle:
+                        size: self.size
+                        pos: self.pos
+                id: next_item_box
+                padding: 10
+                rows: 1
+                cols: 1
+                size: 150, 150
+                size_hint: None, None
+            Label:
+                canvas.before:
+                    Color:
+                        rgba: 0.2, 0.2, 0.2, 1
+                    Rectangle:
+                        size: self.size
+                        pos: self.pos
+                text: 'Here will be buttons and stuff'
