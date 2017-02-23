@@ -65,6 +65,7 @@ class FieldCell(Widget):
             if self.cell.can_accept(item):
                 self.cell.add_item(item)
                 self.update_widget()
+                App.get_running_app().root.start_turn()
             # Whether or not it's accepted, touch should not be propagated
             return True
 
@@ -100,6 +101,7 @@ class ItemMakerWidget(GridLayout):
 
     def __init__(self, **kwargs):
         super(ItemMakerWidget, self).__init__(**kwargs)
+        self.next_item = None
 
     def update_next_item(self, stuff, more_stuff):
         """
@@ -107,7 +109,11 @@ class ItemMakerWidget(GridLayout):
         :param item:
         :return:
         """
-        self.add_widget(GrabbableCell(Cell(App.get_running_app().root.next_item)))
+        if self.next_item:
+            self.remove_widget(self.next_item)
+        print('Item updated')
+        self.next_item = GrabbableCell(Cell(App.get_running_app().root.next_item))
+        self.add_widget(self.next_item)
 
 
 class RightBlock(BoxLayout):
