@@ -3,7 +3,7 @@ from kivy.app import App
 from kivy.uix.widget import Widget
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.gridlayout import GridLayout
-from kivy.properties import ListProperty, ObjectProperty, AliasProperty
+from kivy.properties import ListProperty, ObjectProperty, AliasProperty, StringProperty
 from kivy.clock import Clock
 
 #Game engine
@@ -51,10 +51,27 @@ class FieldCell(Widget):
     Draws ground and bonuses (if any).
     """
     cell = ObjectProperty()
+    cell_text = StringProperty('')
 
     def __init__(self, cell, **kwargs):
-        self.cell = cell
         super(FieldCell, self).__init__(**kwargs)
+        self.cell = cell
+        self.update_widget()
+
+    def on_touch_down(self, touch):
+        if self.x < touch.x < self.x+self.width and \
+                self.y < touch.y < self.y+self.height:
+            item = App.get_running_app().root.next_item
+            if self.cell.can_accept(item):
+                self.cell.add_item(item)
+                self.update_widget()
+            # Whether or not it's accepted, touch should not be propagated
+            return True
+
+    def update_widget(self):
+        #  Later here will be some complex canvas magic
+        self.cell_text = str(self.cell)
+
 
 
 class GrabbableCell(FieldCell):

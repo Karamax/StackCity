@@ -11,9 +11,8 @@ CityGame:
             size: self.size
             pos: self.pos
     Label:
-        text: str(root.cell.ground)
+        text: root.cell_text
         center: root.center
-#    on_touch_down: self.cell.add_item(app.current_item)
 
 <GrabbableCell>:
     size: 50, 50

@@ -55,6 +55,9 @@ class Cell:
         else:
             raise StackCityException('Incorrect item type added to cell')
 
+    def __str__(self):
+        return (str(self.ground))
+
 
 class CellField:
     """
