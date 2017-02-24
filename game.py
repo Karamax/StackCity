@@ -19,7 +19,7 @@ class CityGame(Widget):
 
     def __init__(self, **kwargs):
         super(CityGame, self).__init__(**kwargs)
-        self.cell_field = CellField(field_size=10)
+        self.cell_field = CellField(field_size=12)
         self.next_item_factory = NextItemFactory(self.cell_field)
         Clock.schedule_once(self.init_game)
 
@@ -34,11 +34,15 @@ class CityGame(Widget):
 
 class PlayingField(GridLayout):
 
-    def __init__(self, field_size=10, **kwargs):
+    def __init__(self, **kwargs):
         super(PlayingField, self).__init__(**kwargs)
-        self.field_size = field_size
+        #  A placeholder value. It will be updated in self.populate_field
+        self.field_size = 10
 
     def populate_field(self):
+        self.field_size = App.get_running_app().root.cell_field.field_size
+        self.cols = self.field_size
+        self.rows = self.field_size
         for x in range(self.field_size*self.field_size):
             c = Cell()
             App.get_running_app().root.cell_field.append(c)
@@ -72,7 +76,6 @@ class FieldCell(Widget):
     def update_widget(self):
         #  Later here will be some complex canvas magic
         self.cell_text = str(self.cell)
-
 
 
 class GrabbableCell(FieldCell):
@@ -111,7 +114,6 @@ class ItemMakerWidget(GridLayout):
         """
         if self.next_item:
             self.remove_widget(self.next_item)
-        print('Item updated')
         self.next_item = GrabbableCell(Cell(App.get_running_app().root.next_item))
         self.add_widget(self.next_item)
 

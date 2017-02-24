@@ -66,7 +66,8 @@ class CellField:
     cell, adding or removing cells, etc.
     """
     def __init__(self, field_size):
-        self.cells = [None for x in range(field_size*field_size)]
+        self.field_size = field_size
+        self.cells = [None for x in range(self.field_size*self.field_size)]
 
     def append(self, item):
         assert isinstance(item, Cell)

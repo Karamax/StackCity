@@ -4,6 +4,7 @@ A collection of factory objects
 from cells import Ground
 import random
 
+
 class NextItemFactory:
     """
     A factory that generates items to be placed on field. It knows about the
