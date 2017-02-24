@@ -39,7 +39,7 @@ class Cell:
         :return:
         """
         # Currently a placeholder
-        if isinstance(item, Ground):
+        if self.ground.ground_type in item.acceptable_ground:
             return True
         else:
             return False
@@ -56,7 +56,7 @@ class Cell:
             raise StackCityException('Incorrect item type added to cell')
 
     def __str__(self):
-        return (str(self.ground))
+        return str(self.ground)
 
 
 class CellField:
@@ -82,13 +82,23 @@ class CellField:
             raise StackCityException('Adding cell to a field that is full!')
 
 
-class Ground:
+class Placeable:
+    """
+    Something that can be placed on the field
+    """
+    def __init__(self, acceptable_ground=('empty', )):
+        #  The ground this can be placed on
+        self.acceptable_ground = acceptable_ground
+
+
+class Ground(Placeable):
     """
     A class for ground type
     """
     ground_types = {'empty', 'water', 'living', 'military', 'infrastructure'}
 
-    def __init__(self, ground_type):
+    def __init__(self, ground_type, **kwargs):
+        super(Ground, self).__init__(**kwargs)
         if not ground_type in self.ground_types:
             raise StackCityException('Unknown ground type')
         self.ground_type = ground_type
@@ -98,13 +108,13 @@ class Ground:
         return self.ground_type
 
 
-class Building:
+class Building(Placeable):
     """
     A backend class for the building
     """
 
-    def __init__(self, grounds=['water', 'living', 'military', 'infrastructure'],
-                 name='BaseBuilding', effect=None):
-        self.grounds = grounds
+    def __init__(self,
+                 name='BaseBuilding', effect=None, **kwargs):
+        super(Building, self).__init__(**kwargs)
         self.name = name
         self.effect = effect

@@ -13,6 +13,5 @@ class NextItemFactory:
     def __init__(self, cell_field):
         self.cell_field = cell_field
 
-
     def create_item(self):
         return Ground(ground_type=random.choice(('water', 'living')))
