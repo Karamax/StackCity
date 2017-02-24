@@ -33,13 +33,19 @@ class CityGame(Widget):
 
 
 class PlayingField(GridLayout):
-
+    """
+    A grid of cells where the city is built
+    """
     def __init__(self, **kwargs):
         super(PlayingField, self).__init__(**kwargs)
         #  A placeholder value. It will be updated in self.populate_field
         self.field_size = 10
 
     def populate_field(self):
+        """
+        Fill the game field with empty terrain
+        :return:
+        """
         self.field_size = App.get_running_app().root.cell_field.field_size
         self.cols = self.field_size
         self.rows = self.field_size
@@ -47,6 +53,19 @@ class PlayingField(GridLayout):
             c = Cell()
             App.get_running_app().root.cell_field.append(c)
             self.add_widget(FieldCell(c))
+
+
+    def get_cell_by_pos(self, pos):
+        """
+        Return cell that is on current position (if any). Return None otherwise
+        :param pos:
+        :return:
+        """
+        if self.collide_point(*pos):
+            for widget in self.children:
+                if isinstance(widget, FieldCell)and widget.collide_point(*pos):
+                        return widget
+        return None
 
 
 class FieldCell(Widget):
@@ -62,16 +81,20 @@ class FieldCell(Widget):
         self.cell = cell
         self.update_widget()
 
+    def accept_item(self):
+        item = App.get_running_app().root.next_item
+        if self.cell.can_accept(item):
+            self.cell.add_item(item)
+            self.update_widget()
+            App.get_running_app().root.start_turn()
+
+
     def on_touch_down(self, touch):
-        if self.x < touch.x < self.x+self.width and \
-                self.y < touch.y < self.y+self.height:
-            item = App.get_running_app().root.next_item
-            if self.cell.can_accept(item):
-                self.cell.add_item(item)
-                self.update_widget()
-                App.get_running_app().root.start_turn()
+        if self.collide_point(*touch.pos):
+            self.accept_item()
             # Whether or not it's accepted, touch should not be propagated
             return True
+
 
     def update_widget(self):
         #  Later here will be some complex canvas magic
@@ -84,9 +107,9 @@ class GrabbableCell(FieldCell):
     """
 
     def on_touch_down(self, touch):
-        if self.x < touch.x < self.x+self.width and\
-                self.y < touch.y < self.y+self.height:
+        if self.collide_point(*touch.pos):
             touch.grab(self)
+            return True
 
     def on_touch_move(self, touch):
         if touch.grab_current is self:
@@ -94,7 +117,11 @@ class GrabbableCell(FieldCell):
 
     def on_touch_up(self, touch):
         if touch.grab_current is self:
+            acceptor = App.get_running_app().root.ids['field'].get_cell_by_pos(touch.pos)
+            if acceptor:
+                acceptor.accept_item()
             touch.ungrab(self)
+            return True
 
 
 class ItemMakerWidget(GridLayout):
