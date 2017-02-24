@@ -2,7 +2,7 @@
 CityGame:
 
 <FieldCell>:
-    size: 50, 50
+    size: 32, 32
     size_hint: None, None
     canvas:
         Color:
@@ -10,9 +10,11 @@ CityGame:
         Rectangle:
             size: self.size
             pos: self.pos
-    Label:
-        text: root.cell_text
-        center: root.center
+    Image:
+        id: cell_image
+        source: root.images[root.cell.ground.ground_type]
+        pos: root.pos
+        size: root.size
 
 <GrabbableCell>:
     size: 50, 50

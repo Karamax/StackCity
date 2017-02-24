@@ -20,7 +20,7 @@ class CityGame(Widget):
 
     def __init__(self, **kwargs):
         super(CityGame, self).__init__(**kwargs)
-        self.cell_field = CellField(field_size=12)
+        self.cell_field = CellField(field_size=18)
         self.next_item_factory = NextItemFactory(self.cell_field)
         Clock.schedule_once(self.init_game)
 
@@ -76,14 +76,20 @@ class FieldCell(Widget):
     """
     cell = ObjectProperty()
     cell_text = StringProperty('')
+    images = {'military': 'atlas://grounds/military',
+              'living': 'atlas://grounds/living',
+              'infrastructure': 'atlas://grounds/infrastructure',
+              'water': 'atlas://grounds/water',
+              'empty': 'atlas://grounds/empty'}
 
     def __init__(self, cell, **kwargs):
-        super(FieldCell, self).__init__(**kwargs)
         self.cell = cell
+        super(FieldCell, self).__init__(**kwargs)
         self.update_widget()
 
     def accept_item(self):
         item = App.get_running_app().root.next_item
+        print(item)
         if self.cell.can_accept(item):
             self.cell.add_item(item)
             self.update_widget()
@@ -101,6 +107,7 @@ class FieldCell(Widget):
 
     def update_widget(self):
         #  Later here will be some complex canvas magic
+        self.ids['cell_image'].source = self.images[self.cell.ground.ground_type]
         self.cell_text = str(self.cell)
 
 
