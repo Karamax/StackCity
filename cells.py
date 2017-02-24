@@ -98,3 +98,13 @@ class Ground:
         return self.ground_type
 
 
+class Building:
+    """
+    A backend class for the building
+    """
+
+    def __init__(self, grounds=['water', 'living', 'military', 'infrastructure'],
+                 name='BaseBuilding', effect=None):
+        self.grounds = grounds
+        self.name = name
+        self.effect = effect
