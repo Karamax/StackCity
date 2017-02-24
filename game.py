@@ -1,5 +1,6 @@
 import kivy
 from kivy.app import App
+from kivy.animation import Animation
 from kivy.uix.widget import Widget
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.gridlayout import GridLayout
@@ -87,6 +88,8 @@ class FieldCell(Widget):
             self.cell.add_item(item)
             self.update_widget()
             App.get_running_app().root.start_turn()
+            return True
+        return False
 
 
     def on_touch_down(self, touch):
@@ -105,10 +108,15 @@ class GrabbableCell(FieldCell):
     """
     A cell subclass that can be dragged around
     """
+    def __init__(self, cell, **kwargs):
+        super(GrabbableCell, self).__init__(cell, **kwargs)
+        self.starting_pos = None
 
     def on_touch_down(self, touch):
         if self.collide_point(*touch.pos):
             touch.grab(self)
+            #  Just `self.starting_pos = self.pos` makes starting_pos a ref
+            self.starting_pos = self.pos[0], self.pos[1]
             return True
 
     def on_touch_move(self, touch):
@@ -117,9 +125,13 @@ class GrabbableCell(FieldCell):
 
     def on_touch_up(self, touch):
         if touch.grab_current is self:
+            accepted = False
             acceptor = App.get_running_app().root.ids['field'].get_cell_by_pos(touch.pos)
             if acceptor:
-                acceptor.accept_item()
+                accepted = acceptor.accept_item()
+            if not accepted:
+                a = Animation(pos=self.starting_pos, duration=0.3)
+                a.start(self)
             touch.ungrab(self)
             return True
 
