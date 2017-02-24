@@ -31,6 +31,7 @@ class CityGame(Widget):
 
     def start_turn(self):
         self.next_item = self.next_item_factory.create_item()
+        self.ids['next_item_label'].text = str(self.next_item)
 
 
 class PlayingField(GridLayout):
