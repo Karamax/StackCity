@@ -69,6 +69,16 @@ class PlayingField(GridLayout):
                         return widget
         return None
 
+    def get_cell_widgets(self, numbers):
+        """
+        Yield cell widgets whose IDs are in `numbers`
+        :param numbers:
+        :return:
+        """
+        for widget in self.children:
+            if isinstance(widget, FieldCell) and widget.cell.number in numbers:
+                yield widget
+
 
 class FieldCell(Widget):
     """
@@ -112,7 +122,11 @@ class FieldCell(Widget):
             if self.cell.ground.ground_type == 'water':
             #  Currently only waterfronts are supported
                 source += self.get_neighbour_postfix()
-        self.ids['cell_image'].source = source
+        if source != self.ids['cell_image'].source:
+            self.ids['cell_image'].source = source
+            for neighbour in App.get_running_app().root.ids['field'].get_cell_widgets(
+                App.get_running_app().root.cell_field.get_neighbours(self.cell.number)):
+                neighbour.update_widget()
 
     def get_neighbour_postfix(self):
         """
@@ -151,7 +165,6 @@ class FieldCell(Widget):
             return '_{0}_2'.format(cell_field[neighbours[6]].ground.ground_type)
         else:
             return ''
-
 
 
 class GrabbableCell(FieldCell):
