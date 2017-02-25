@@ -117,6 +117,7 @@ class PlayingField(Widget):
                                  pos=self.get_cell_widget(number).pos)
         self.buildings_layer.add_widget(building_widget)
 
+
 class FieldCell(Widget):
     """
     A widget that displays a single field cell.
@@ -155,8 +156,6 @@ class FieldCell(Widget):
     def on_touch_down(self, touch):
         if self.collide_point(*touch.pos):
             self.create_tooltip()
-            # Whether or not it's accepted, touch should not be propagated
-            return True
 
     def create_tooltip(self):
         print('Tooltip created')

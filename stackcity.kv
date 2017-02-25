@@ -95,6 +95,11 @@ CityGame:
                         size: self.size
                         pos: self.pos
                 text: "Loading..."
+            Button:
+                on_press: root.start_turn()
+                text: 'Reroll item'
+                size_hint_y: None
+                size_y: 50
             Label:
                 canvas.before:
                     Color:
