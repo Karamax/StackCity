@@ -105,8 +105,53 @@ class FieldCell(Widget):
 
     def update_widget(self):
         #  Later here will be some complex canvas magic
-        self.ids['cell_image'].source = self.images[self.cell.ground.ground_type]
-        # self.cell_text = str(self.cell.number)
+        #  Changing source on the fly has the unnecessary overhead due to disk IO (?)
+        source = 'atlas://grounds/{0}'.format(self.cell.ground.ground_type)
+        if self.cell.number:
+            #  Neighborhood only checked for the tiles placed on map
+            if self.cell.ground.ground_type == 'water':
+            #  Currently only waterfronts are supported
+                source += self.get_neighbour_postfix()
+        self.ids['cell_image'].source = source
+
+    def get_neighbour_postfix(self):
+        """
+        Get a postfix for tile ID based on neighbours
+        This method is a sort of placeholder: no more than 2 borders per cell are
+        supported. This is mostly due to there being no 3-walled or 4-walled
+        tiles and is to be fixed sometime later. In addition, border choice is
+        dependent on position of neighbours: upper takes precedence over lower
+        and left -- over right. This, too, is to be fixed when I have more tiles
+        :param cell_field:
+        :param neighbours:
+        :return:
+        """
+        # Take references purely for code readability
+        cell_field = App.get_running_app().root.cell_field
+        own_ground = self.cell.ground.ground_type
+        neighbours = cell_field.get_neighbours(self.cell.number)
+        if neighbours[1] and cell_field[neighbours[1]].ground.ground_type not in ('empty', own_ground):
+            if neighbours[3] and cell_field[neighbours[3]].ground.ground_type == cell_field[neighbours[1]].ground.ground_type:
+                return '_{0}_7'.format(cell_field[neighbours[1]].ground.ground_type)
+            elif neighbours[4] and cell_field[neighbours[4]].ground.ground_type == cell_field[neighbours[1]].ground.ground_type:
+                return '_{0}_9'.format(cell_field[neighbours[1]].ground.ground_type)
+            else:
+                return '_{0}_8'.format(cell_field[neighbours[1]].ground.ground_type)
+        elif neighbours[3] and cell_field[neighbours[3]].ground.ground_type not in ('empty', own_ground):
+            if neighbours[6] and cell_field[neighbours[6]].ground.ground_type == cell_field[neighbours[3]].ground.ground_type:
+                return '_{0}_1'.format(cell_field[neighbours[3]].ground.ground_type)
+            else:
+                return '_{0}_4'.format(cell_field[neighbours[3]].ground.ground_type)
+        elif neighbours[4] and cell_field[neighbours[4]].ground.ground_type not in ('empty', own_ground):
+            if neighbours[6] and cell_field[neighbours[6]].ground.ground_type == cell_field[neighbours[4]].ground.ground_type:
+                return '_{0}_3'.format(cell_field[neighbours[4]].ground.ground_type)
+            else:
+                return '_{0}_6'.format(cell_field[neighbours[4]].ground.ground_type)
+        elif neighbours[6] and cell_field[neighbours[6]].ground.ground_type not in ('empty', own_ground):
+            return '_{0}_2'.format(cell_field[neighbours[6]].ground.ground_type)
+        else:
+            return ''
+
 
 
 class GrabbableCell(FieldCell):

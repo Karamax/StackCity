@@ -69,6 +69,9 @@ class CellField:
         self.field_size = field_size
         self.cells = [None for x in range(self.field_size*self.field_size)]
 
+    def __getitem__(self, item):
+        return self.cells[item]
+
     def append(self, item):
         assert isinstance(item, Cell)
         placed = False
