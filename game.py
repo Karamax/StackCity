@@ -5,6 +5,7 @@ from kivy.uix.widget import Widget
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.floatlayout import FloatLayout
+from kivy.uix.label import Label
 from kivy.properties import ListProperty, ObjectProperty, AliasProperty, StringProperty
 from kivy.clock import Clock
 
@@ -133,6 +134,7 @@ class FieldCell(Widget):
         self.cell = cell
         super(FieldCell, self).__init__(**kwargs)
         self.update_widget()
+        self.tooltip = None
 
     def accept_item(self):
         item = App.get_running_app().root.next_item
@@ -152,10 +154,22 @@ class FieldCell(Widget):
 
     def on_touch_down(self, touch):
         if self.collide_point(*touch.pos):
-            self.accept_item()
+            self.create_tooltip()
             # Whether or not it's accepted, touch should not be propagated
             return True
 
+    def create_tooltip(self):
+        print('Tooltip created')
+        self.tooltip = Label(text='{0} on {1} ground'.format(self.cell.building,
+                                                 self.cell.ground.ground_type),
+                             x=self.x, y=self.y-20, color=(1,0,0,1))
+        self.parent.add_widget(self.tooltip)
+        Clock.schedule_once(self.remove_tooltip, 2)
+
+    def remove_tooltip(self, dt):
+        self.parent.remove_widget(self.tooltip)
+
+    # Methods for drawing ground widget
     def update_widget(self):
         #  Later here will be some complex canvas magic
         #  Changing source on the fly has the unnecessary overhead due to disk IO (?)
