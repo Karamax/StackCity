@@ -4,6 +4,7 @@ from kivy.animation import Animation
 from kivy.uix.widget import Widget
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.gridlayout import GridLayout
+from kivy.uix.floatlayout import FloatLayout
 from kivy.properties import ListProperty, ObjectProperty, AliasProperty, StringProperty
 from kivy.clock import Clock
 
@@ -36,7 +37,7 @@ class CityGame(Widget):
         self.ids['next_item_label'].text = str(self.next_item)
 
 
-class PlayingField(GridLayout):
+class PlayingField(Widget):
     """
     A grid of cells where the city is built
     """
@@ -44,6 +45,19 @@ class PlayingField(GridLayout):
         super(PlayingField, self).__init__(**kwargs)
         #  A placeholder value. It will be updated in self.populate_field
         self.field_size = 10
+        self.cells_grid = GridLayout(pos=self.pos, size=self.size,
+                                     cols=self.field_size, rows=self.field_size)
+        self.add_widget(self.cells_grid)
+        self.buildings_layer = FloatLayout(size=self.size, pos=self.pos)
+        self.add_widget(self.buildings_layer)
+        self.bind(size=self.update_subwidgets)
+        self.bind(pos=self.update_subwidgets)
+
+    def update_subwidgets(self, stuff, stuff2):
+        self.cells_grid.pos = self.pos
+        self.cells_grid.size = self.size
+        self.buildings_layer.pos = self.pos
+        self.buildings_layer.size = self.size
 
     def populate_field(self):
         """
@@ -51,24 +65,34 @@ class PlayingField(GridLayout):
         :return:
         """
         self.field_size = App.get_running_app().root.cell_field.field_size
-        self.cols = self.field_size
-        self.rows = self.field_size
+        self.cells_grid.cols = self.field_size
+        self.cells_grid.rows = self.field_size
         for x in range(self.field_size*self.field_size):
             c = Cell()
             App.get_running_app().root.cell_field.append(c)
-            self.add_widget(FieldCell(c))
-
+            self.cells_grid.add_widget(FieldCell(c))
 
     def get_cell_by_pos(self, pos):
         """
-        Return cell that is on current position (if any). Return None otherwise
+        Return cell that is on a given position (if any). Return None otherwise.
         :param pos:
         :return:
         """
         if self.collide_point(*pos):
-            for widget in self.children:
+            for widget in self.cells_grid.children:
                 if isinstance(widget, FieldCell)and widget.collide_point(*pos):
                         return widget
+        return None
+
+    def get_cell_widget(self, number):
+        """
+        Get cell widget with a given ID. Return None if there is no such cell.
+        :param number:
+        :return:
+        """
+        for widget in self.cells_grid.children:
+            if isinstance(widget, FieldCell) and widget.cell.number == number:
+                return widget
         return None
 
     def get_cell_widgets(self, numbers):
@@ -77,10 +101,20 @@ class PlayingField(GridLayout):
         :param numbers:
         :return:
         """
-        for widget in self.children:
+        for widget in self.cells_grid.children:
             if isinstance(widget, FieldCell) and widget.cell.number in numbers:
                 yield widget
 
+    def add_building(self, building, number):
+        """
+        Add a building widget to cell #number
+        :param building:
+        :param number:
+        :return:
+        """
+        building_widget = BuildingWidget(building,
+                                 pos=self.get_cell_widget(number).pos)
+        self.buildings_layer.add_widget(building_widget)
 
 class FieldCell(Widget):
     """
@@ -105,9 +139,13 @@ class FieldCell(Widget):
         if self.cell.can_accept(item):
             self.cell.add_item(item)
             self.update_widget()
+            # Grounds get added to self, while Buildings have to be passed to
+            # PlayingField
             if isinstance(item, Building):
+                self.cell.building = item
                 App.get_running_app().root.buildings.append(item)
-                self.parent.add_widget(BuildingWidget(item))
+                App.get_running_app().root.ids['field'].\
+                    add_building(item, self.cell.number)
             App.get_running_app().root.start_turn()
             return True
         return False

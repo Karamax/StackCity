@@ -158,4 +158,7 @@ class Building(Placeable):
         super(Building, self).__init__(**kwargs)
         self.name = name
         self.effect = effect
-        self.image_source=image_source
+        self.image_source = image_source
+
+    def __str__(self):
+        return self.name
