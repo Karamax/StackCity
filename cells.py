@@ -81,6 +81,41 @@ class CellField:
         if not placed:
             raise StackCityException('Adding cell to a field that is full!')
 
+    def get_neighbours(self, number):
+        """
+        Given cell number, return a list of all its neighbours.
+        Cell numbers in the list are ordered as following:
+          0 1 2
+          3 q 4
+          5 6 7
+        Where q is query cell and numbers are list indices. There are always 8
+        elements in the list. When the neighbouring cell is unavailable (eg due
+        to query being a border cell), None is added in its place
+        :param number:
+        :return:
+        """
+        r = []
+        # if's within list declarations check for going beyond left&right map borders
+        # maps check for going beyond upper and lower borders
+        upper = [number-self.field_size-1 if number % self.field_size > 0 else None,
+                 number-self.field_size,
+                 number-self.field_size+1 if number % self.field_size < self.field_size-1 else None]
+        #  Check for values outside map
+        r += map(lambda x: x if x and x > 0 else None, upper)
+        if number % self.field_size > 0:
+            r.append(number-1)
+        else:
+            r.append(None)
+        if number % self.field_size < self.field_size-1:
+            r.append(number+1)
+        else:
+            r.append(None)
+        lower = [number+self.field_size-1 if number % self.field_size > 0 else None,
+                 number+self.field_size,
+                 number+self.field_size+1 if number % self.field_size < self.field_size-1 else None]
+        r += map(lambda x: x if x and x < self.field_size*self.field_size else None, lower)
+        return r
+
 
 class Placeable:
     """

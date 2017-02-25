@@ -90,7 +90,6 @@ class FieldCell(Widget):
 
     def accept_item(self):
         item = App.get_running_app().root.next_item
-        print(item)
         if self.cell.can_accept(item):
             self.cell.add_item(item)
             self.update_widget()
@@ -98,18 +97,16 @@ class FieldCell(Widget):
             return True
         return False
 
-
     def on_touch_down(self, touch):
         if self.collide_point(*touch.pos):
             self.accept_item()
             # Whether or not it's accepted, touch should not be propagated
             return True
 
-
     def update_widget(self):
         #  Later here will be some complex canvas magic
         self.ids['cell_image'].source = self.images[self.cell.ground.ground_type]
-        self.cell_text = str(self.cell)
+        # self.cell_text = str(self.cell.number)
 
 
 class GrabbableCell(FieldCell):
