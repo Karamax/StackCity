@@ -162,12 +162,12 @@ class FieldCell(Widget):
         print('Tooltip created')
         self.tooltip = Label(text='{0} on {1} ground'.format(self.cell.building,
                                                  self.cell.ground.ground_type),
-                             x=self.x, y=self.y-20, color=(1,0,0,1))
-        self.parent.add_widget(self.tooltip)
-        Clock.schedule_once(self.remove_tooltip, 2)
+                             x=self.x, y=self.y-20, color=(1, 0, 0, 1))
+        self.parent.parent.add_widget(self.tooltip)
+        Clock.schedule_once(self.remove_tooltip, 1.2)
 
     def remove_tooltip(self, dt):
-        self.parent.remove_widget(self.tooltip)
+        self.parent.parent.remove_widget(self.tooltip)
 
     # Methods for drawing ground widget
     def update_widget(self):
