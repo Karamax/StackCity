@@ -1,7 +1,7 @@
 """
 A collection of factory objects
 """
-from cells import Ground
+from cells import Ground, Building
 import random
 
 
@@ -14,5 +14,7 @@ class NextItemFactory:
         self.cell_field = cell_field
 
     def create_item(self):
-        return Ground(ground_type=random.choice(('water', 'living',
-                                                 'military', 'infrastructure')))
+        return random.choice((Ground(ground_type=random.choice(('water', 'living',
+                                         'military', 'infrastructure'))),
+                             Building(image_source='House.png',
+                                      acceptable_ground=['living', 'empty'])))

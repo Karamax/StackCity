@@ -52,6 +52,8 @@ class Cell:
         """
         if isinstance(item, Ground):
             self.ground = item
+        elif isinstance(item, Building):
+            self.building = item
         else:
             raise StackCityException('Incorrect item type added to cell')
 
@@ -151,8 +153,9 @@ class Building(Placeable):
     A backend class for the building
     """
 
-    def __init__(self,
+    def __init__(self, image_source='House.png',
                  name='BaseBuilding', effect=None, **kwargs):
         super(Building, self).__init__(**kwargs)
         self.name = name
         self.effect = effect
+        self.image_source=image_source

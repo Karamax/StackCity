@@ -8,7 +8,7 @@ from kivy.properties import ListProperty, ObjectProperty, AliasProperty, StringP
 from kivy.clock import Clock
 
 #Game engine
-from cells import Cell, CellField
+from cells import Cell, CellField, Ground, Building
 from factories import NextItemFactory
 
 
@@ -17,6 +17,8 @@ class CityGame(Widget):
     next_item = ObjectProperty(None)
     #  A field backend
     cell_field = ObjectProperty(None)
+    #  buildings list
+    buildings = ListProperty(None)
 
     def __init__(self, **kwargs):
         super(CityGame, self).__init__(**kwargs)
@@ -103,6 +105,9 @@ class FieldCell(Widget):
         if self.cell.can_accept(item):
             self.cell.add_item(item)
             self.update_widget()
+            if isinstance(item, Building):
+                App.get_running_app().root.buildings.append(item)
+                self.parent.add_widget(BuildingWidget(item))
             App.get_running_app().root.start_turn()
             return True
         return False
@@ -167,6 +172,53 @@ class FieldCell(Widget):
             return ''
 
 
+class BuildingWidget(Widget):
+    """
+    A building widget class. Displays a building
+    """
+    def __init__(self, building, **kwargs):
+        super(BuildingWidget, self).__init__(**kwargs)
+        self.building = building
+        self.update_widget()
+
+    def update_widget(self):
+        self.ids['building_image'].source = self.building.image_source
+
+
+# This and Grabbable cell are repeating the same boilerplate, but I couldn't get
+# multiple inheritance working to save my life.
+class GrabbableBuilding(BuildingWidget):
+    """
+    A building subclass that can be dragged around
+    """
+    def __init__(self, building, **kwargs):
+        super(GrabbableBuilding, self).__init__(building, **kwargs)
+        self.starting_pos = None
+
+    def on_touch_down(self, touch):
+        if self.collide_point(*touch.pos):
+            touch.grab(self)
+            #  Just `self.starting_pos = self.pos` makes starting_pos a ref
+            self.starting_pos = self.pos[0], self.pos[1]
+            return True
+
+    def on_touch_move(self, touch):
+        if touch.grab_current is self:
+            self.center = touch.x, touch.y
+
+    def on_touch_up(self, touch):
+        if touch.grab_current is self:
+            accepted = False
+            acceptor = App.get_running_app().root.ids['field'].get_cell_by_pos(touch.pos)
+            if acceptor:
+                accepted = acceptor.accept_item()
+            if not accepted:
+                a = Animation(pos=self.starting_pos, duration=0.3)
+                a.start(self)
+            touch.ungrab(self)
+            return True
+
+
 class GrabbableCell(FieldCell):
     """
     A cell subclass that can be dragged around
@@ -216,7 +268,10 @@ class ItemMakerWidget(GridLayout):
         """
         if self.next_item:
             self.remove_widget(self.next_item)
-        self.next_item = GrabbableCell(Cell(App.get_running_app().root.next_item))
+        if isinstance(App.get_running_app().root.next_item, Ground):
+            self.next_item = GrabbableCell(Cell(App.get_running_app().root.next_item))
+        elif isinstance(App.get_running_app().root.next_item, Building):
+            self.next_item=GrabbableBuilding(App.get_running_app().root.next_item)
         self.add_widget(self.next_item)
 
 
