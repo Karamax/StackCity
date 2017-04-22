@@ -241,8 +241,12 @@ class BuildingWidget(Widget):
         self.ids['building_image'].source = self.building.image_source
 
 
+#  Classes for stuff that can be dragged from the ItemMakerWidget to the field.
+#  These are *not* used for already placed items, they're temporary
 # This and Grabbable cell are repeating the same boilerplate, but I couldn't get
 # mixin class correctly working to save my life.
+#  All Grabbable* classes are expected to start turn in their on_touch_up if the
+#  item was accepted.
 
 
 class GrabbableBuilding(BuildingWidget):
@@ -268,8 +272,9 @@ class GrabbableBuilding(BuildingWidget):
         if touch.grab_current is self:
             accepted = False
             acceptor = App.get_running_app().root.ids['field'].get_cell_by_pos(touch.pos)
-            if acceptor:
-                accepted = acceptor.accept_item(self.building)
+            if acceptor.cell.can_accept(self.building):
+                acceptor.accept_item(self.building)
+                App.get_running_app().root.start_turn()
             if not accepted:
                 a = Animation(pos=self.starting_pos, duration=0.3)
                 a.start(self)
@@ -296,19 +301,21 @@ class GrabbableGroundGroup(Widget):
             for x in range(len(cells[y])):
                 self.offsets[y][x] = [32*(x-x_midpoint),
                                       32*(y-y_midpoint)]
-                self.cell_widgets[y][x] = FieldCell(Cell(ground=self.cells[y][x]),
-                            center_x=self.center_x + self.offsets[y][x][0],
-                            center_y=self.center_y + self.offsets[y][x][1])
-                self.add_widget(self.cell_widgets[y][x])
+                if self.cells[y][x]:
+                    self.cell_widgets[y][x] = FieldCell(Cell(ground=self.cells[y][x]),
+                                center_x=self.center_x + self.offsets[y][x][0],
+                                center_y=self.center_y + self.offsets[y][x][1])
+                    self.add_widget(self.cell_widgets[y][x])
         self.bind(pos=self.update_cells)
         
     def update_cells(self, *args):
         for y in range(len(self.cells)):
             for x in range(len(self.cells[y])):
-                self.cell_widgets[y][x].center = [
-                    self.center_x + self.offsets[y][x][0],
-                    self.center_y + self.offsets[y][x][1]
-                ]
+                if self.cells[y][x]:
+                    self.cell_widgets[y][x].center = [
+                        self.center_x + self.offsets[y][x][0],
+                        self.center_y + self.offsets[y][x][1]
+                    ]
             
     def on_touch_down(self, touch):
         if self.collide_point(*touch.pos):
@@ -325,25 +332,26 @@ class GrabbableGroundGroup(Widget):
         if touch.grab_current is self:
             will_accept = True
             for y in range(len(self.cells)):
-                for x in range(len(self.cells)):
-                    acceptor = App.get_running_app().root.ids['field'].\
-                        get_cell_by_pos((
-                        self.center_x + self.offsets[y][x][0],
-                        self.center_y + self.offsets[y][x][1]
-                    ))
-                    if not acceptor.cell.can_accept(self.cells[y][x]):
-                        will_accept = False
-                        break
-            if will_accept:
-                for y in range(len(self.cells)):
-                    for x in range(len(self.cells[y])):
+                for x in range(len(self.cells[y])):
+                    if self.cells[y][x]:
                         acceptor = App.get_running_app().root.ids['field'].\
                             get_cell_by_pos((
                             self.center_x + self.offsets[y][x][0],
                             self.center_y + self.offsets[y][x][1]
                         ))
-                        acceptor.accept_item(self.cells[y][x])
-                        print('Item accepted')
+                        if not acceptor.cell.can_accept(self.cells[y][x]):
+                            will_accept = False
+                            break
+            if will_accept:
+                for y in range(len(self.cells)):
+                    for x in range(len(self.cells[y])):
+                        if self.cells[y][x]:
+                            acceptor = App.get_running_app().root.ids['field'].\
+                                get_cell_by_pos((
+                                self.center_x + self.offsets[y][x][0],
+                                self.center_y + self.offsets[y][x][1]
+                            ))
+                            acceptor.accept_item(self.cells[y][x])
                 App.get_running_app().root.start_turn()
             else:
                 a = Animation(pos=self.starting_pos, duration=0.3)

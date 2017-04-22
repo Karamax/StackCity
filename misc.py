@@ -23,3 +23,14 @@ def shape_copy(old_list):
         else:
             r.append(None)
     return r
+
+
+def make_filled_shape(size, value=True):
+    """
+    Return a list of a given shape, completely filled with the same value.
+    Basically an analogue of numpy.zeros, numpy.ones and the kind
+    :param size:
+    :return:
+    """
+    return [[value for x in range(size[0])] for y in range(size[1])]
+    
