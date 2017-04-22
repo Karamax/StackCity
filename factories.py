@@ -28,7 +28,7 @@ class NextItemFactory:
         :return:
         """
         if size[0] == 1 or size[1] == 1:
-            return make_filled_shape(size)
+            return [make_filled_shape(size)]
         if size[1] == 2:
             if size[0] == 2:
                 return [
@@ -70,10 +70,9 @@ class NextItemFactory:
         shape_list = self.get_shape_list(size)
         shape_index = random.randint(0, len(shape_list)-1)
         shape = shape_list[shape_index]
-        print(size, shape)
         r = shape_copy(shape)
-        for y in range(size[0]):
-            for x in range(size[1]):
+        for y in range(len(r)):
+            for x in range(len(r[y])):
                 if shape[y][x]:
                     r[y][x] = Ground(ground_type=ground_type)
         return r

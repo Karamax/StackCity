@@ -1,3 +1,5 @@
+#! /usr/bin/python3
+
 import kivy
 from kivy.app import App
 from kivy.animation import Animation
@@ -12,7 +14,11 @@ from kivy.clock import Clock
 #Game engine
 from cells import Cell, CellField, Ground, Building
 from factories import NextItemFactory
-from misc import shape_copy
+from misc import shape_copy, name_ground_list
+
+# Other libs
+import itertools
+
 
 class CityGame(Widget):
     #  An item to be attached
@@ -35,7 +41,13 @@ class CityGame(Widget):
 
     def start_turn(self):
         self.next_item = self.next_item_factory.create_item()
-        self.ids['next_item_label'].text = str(self.next_item)
+        #  Updating next item label
+        if isinstance(self.next_item, Building):
+            label = str(self.next_item)
+        elif isinstance(self.next_item, list):
+            # Assuming only ground comes in lists
+            label = name_ground_list(self.next_item)
+        self.ids['next_item_label'].text = label
 
 
 class PlayingField(Widget):
@@ -272,7 +284,7 @@ class GrabbableBuilding(BuildingWidget):
         if touch.grab_current is self:
             accepted = False
             acceptor = App.get_running_app().root.ids['field'].get_cell_by_pos(touch.pos)
-            if acceptor.cell.can_accept(self.building):
+            if acceptor and acceptor.cell.can_accept(self.building):
                 acceptor.accept_item(self.building)
                 App.get_running_app().root.start_turn()
             if not accepted:
@@ -339,7 +351,8 @@ class GrabbableGroundGroup(Widget):
                             self.center_x + self.offsets[y][x][0],
                             self.center_y + self.offsets[y][x][1]
                         ))
-                        if not acceptor.cell.can_accept(self.cells[y][x]):
+                        # Either released out of field or in incorrect pos
+                        if not acceptor or not acceptor.cell.can_accept(self.cells[y][x]):
                             will_accept = False
                             break
             if will_accept:
@@ -411,11 +424,14 @@ class ItemMakerWidget(GridLayout):
             self.remove_widget(self.next_item)
         next_item_object = App.get_running_app().root.next_item
         if isinstance(next_item_object, Ground):
-            self.next_item = GrabbableCell(Cell(App.get_running_app().root.next_item))
+            self.next_item = GrabbableCell(Cell(App.get_running_app().root.next_item),
+                                           center=self.center)
         elif isinstance(next_item_object, Building):
-            self.next_item = GrabbableBuilding(App.get_running_app().root.next_item)
+            self.next_item = GrabbableBuilding(App.get_running_app().root.next_item,
+                                               center=self.center)
         elif isinstance(next_item_object, list):
-            self.next_item = GrabbableGroundGroup(next_item_object)
+            self.next_item = GrabbableGroundGroup(next_item_object,
+                                                  center=self.center)
         self.add_widget(self.next_item)
 
 
