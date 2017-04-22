@@ -371,38 +371,6 @@ class GrabbableGroundGroup(Widget):
                 a.start(self)
             touch.ungrab(self)
             return True
-        
-
-class GrabbableCell(FieldCell):
-    """
-    A cell subclass that can be dragged around
-    """
-    def __init__(self, cell, **kwargs):
-        super(GrabbableCell, self).__init__(cell, **kwargs)
-        self.starting_pos = None
-
-    def on_touch_down(self, touch):
-        if self.collide_point(*touch.pos):
-            touch.grab(self)
-            #  Just `self.starting_pos = self.pos` makes starting_pos a ref
-            self.starting_pos = self.pos[0], self.pos[1]
-            return True
-
-    def on_touch_move(self, touch):
-        if touch.grab_current is self:
-            self.center = touch.x, touch.y
-
-    def on_touch_up(self, touch):
-        if touch.grab_current is self:
-            accepted = False
-            acceptor = App.get_running_app().root.ids['field'].get_cell_by_pos(touch.pos)
-            if acceptor:
-                accepted = acceptor.accept_item(self.cell.ground)
-            if not accepted:
-                a = Animation(pos=self.starting_pos, duration=0.3)
-                a.start(self)
-            touch.ungrab(self)
-            return True
 
 
 class ItemMakerWidget(GridLayout):
@@ -424,14 +392,11 @@ class ItemMakerWidget(GridLayout):
             self.remove_widget(self.next_item)
         next_item_object = App.get_running_app().root.next_item
         if isinstance(next_item_object, Ground):
-            self.next_item = GrabbableCell(Cell(App.get_running_app().root.next_item),
-                                           center=self.center)
+            self.next_item = GrabbableCell(Cell(App.get_running_app().root.next_item))
         elif isinstance(next_item_object, Building):
-            self.next_item = GrabbableBuilding(App.get_running_app().root.next_item,
-                                               center=self.center)
+            self.next_item = GrabbableBuilding(App.get_running_app().root.next_item)
         elif isinstance(next_item_object, list):
-            self.next_item = GrabbableGroundGroup(next_item_object,
-                                                  center=self.center)
+            self.next_item = GrabbableGroundGroup(next_item_object)
         self.add_widget(self.next_item)
 
 

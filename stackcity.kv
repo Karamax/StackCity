@@ -15,11 +15,6 @@ CityGame:
         source: None
         pos: root.pos
         size: root.size
-#    Label: # For debugging purposes
-#        text: root.cell_text
-#        center: root.center
-#        font_size: 16
-#        color: 1, 0, 0, 1
 
 <BuildingWidget>:
     size: 32, 32
@@ -52,8 +47,6 @@ CityGame:
             id: field
             size: 600, 600 # rm hardcode later
             size_hint: None, None
-#            cols: 10
-#            rows: 10
             canvas.before:
                 Color:
                     rgba: 0.4, 0.4, 0.4, 1
