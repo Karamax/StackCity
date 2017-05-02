@@ -285,6 +285,8 @@ class GrabbableBuilding(BuildingWidget):
             accepted = False
             acceptor = App.get_running_app().root.ids['field'].get_cell_by_pos(touch.pos)
             if acceptor and acceptor.cell.can_accept(self.building):
+                self.building.get_placed(cell_field=App.get_running_app().root. \
+                                         cell_field, number=acceptor.cell.number)
                 acceptor.accept_item(self.building)
                 App.get_running_app().root.start_turn()
             if not accepted:

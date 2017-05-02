@@ -129,6 +129,18 @@ class Placeable:
     def __init__(self, acceptable_ground=('empty', )):
         #  The ground this can be placed on
         self.acceptable_ground = acceptable_ground
+        self.cell_field = None
+        self.position = None
+        
+    def get_placed(self, cell_field, number):
+        """
+        Remember that self was placed on a given map in a given place
+        :param cell_field:
+        :param position:
+        :return:
+        """
+        self.cell_field = cell_field
+        self.number = number
 
 
 class Ground(Placeable):
@@ -159,6 +171,17 @@ class Building(Placeable):
         self.name = name
         self.effect = effect
         self.image_source = image_source
+        
+    def make_turn(self, cellField, location):
+        """
+        Make this building's turn.
+        Cell field is passed as an argument because this object's instance is
+        created by the BuildingFactory that doesn't know shit about where and
+        how it is gonna be placed.
+        :param cellField:
+        :return:
+        """
+        print('Building {} at {} makes turn'.format(self.name, self.number))
 
     def __str__(self):
         return self.name
