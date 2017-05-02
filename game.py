@@ -13,6 +13,7 @@ from kivy.clock import Clock
 
 #Game engine
 from cells import Cell, CellField, Ground, Building
+from city import CityState
 from factories import NextItemFactory
 from misc import shape_copy, name_ground_list
 
@@ -31,6 +32,7 @@ class CityGame(Widget):
     def __init__(self, **kwargs):
         super(CityGame, self).__init__(**kwargs)
         self.cell_field = CellField(field_size=18)
+        self.cell_field.connect_citystate(CityState())
         self.next_item_factory = NextItemFactory(self.cell_field)
         Clock.schedule_once(self.init_game)
 
@@ -52,6 +54,8 @@ class CityGame(Widget):
         #  Buildings, if any, make turn
         for building in self.buildings:
             building.make_turn()
+        #  Printing resources
+        print(self.cell_field.city_state.resources)
 
 
 class PlayingField(Widget):
