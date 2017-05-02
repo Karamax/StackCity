@@ -42,12 +42,16 @@ class CityGame(Widget):
     def start_turn(self):
         self.next_item = self.next_item_factory.create_item()
         #  Updating next item label
+        #  Widgetry gets updated by RightBlock's children
         if isinstance(self.next_item, Building):
             label = str(self.next_item)
         elif isinstance(self.next_item, list):
             # Assuming only ground comes in lists
             label = name_ground_list(self.next_item)
         self.ids['next_item_label'].text = label
+        #  Buildings, if any, make turn
+        for building in self.buildings:
+            building.make_turn()
 
 
 class PlayingField(Widget):
@@ -247,6 +251,7 @@ class BuildingWidget(Widget):
     def __init__(self, building, **kwargs):
         super(BuildingWidget, self).__init__(**kwargs)
         self.building = building
+        self.building.widget = self
         self.update_widget()
 
     def update_widget(self):

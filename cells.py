@@ -171,8 +171,9 @@ class Building(Placeable):
         self.name = name
         self.effect = effect
         self.image_source = image_source
+        self.widget = None
         
-    def make_turn(self, cellField, location):
+    def make_turn(self):
         """
         Make this building's turn.
         Cell field is passed as an argument because this object's instance is
@@ -181,7 +182,17 @@ class Building(Placeable):
         :param cellField:
         :return:
         """
-        print('Building {} at {} makes turn'.format(self.name, self.number))
+        has_neighbours = False
+        for cell in self.cell_field.get_neighbours(self.number):
+            if self.cell_field[cell].building and \
+                self.cell_field[cell].building.name == self.name:
+                has_neighbours = True
+                break
+        if has_neighbours:
+            print('Building {} at {} makes turn with its neighbour'.\
+                  format(self.name, self.number))
+        else:
+            print('Building {} at {} makes turn'.format(self.name, self.number))
 
     def __str__(self):
         return self.name
