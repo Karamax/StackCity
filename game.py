@@ -8,7 +8,8 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.label import Label
-from kivy.properties import ListProperty, ObjectProperty, AliasProperty, StringProperty
+from kivy.properties import ListProperty, ObjectProperty, DictProperty,\
+    StringProperty
 from kivy.clock import Clock
 
 #Game engine
@@ -26,6 +27,8 @@ class CityGame(Widget):
     next_item = ObjectProperty(None)
     #  A field backend
     cell_field = ObjectProperty(None)
+    #  Resources view
+    resources = DictProperty(None)
     #  buildings list
     buildings = ListProperty(None)
 
@@ -54,8 +57,8 @@ class CityGame(Widget):
         #  Buildings, if any, make turn
         for building in self.buildings:
             building.make_turn()
-        #  Printing resources
-        print(self.cell_field.city_state.resources)
+        #  Making resources available for subwidgets
+        self.resources = self.cell_field.city_state.resources
 
 
 class PlayingField(Widget):
