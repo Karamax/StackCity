@@ -6,7 +6,8 @@ from collections import namedtuple
 
 Resource = namedtuple('Resource', 'name icon_source')
 resources = {'gold': Resource(name='Gold', icon_source='Coins.png'),
-             'food': Resource(name='Food', icon_source='Food.png')}
+             'food': Resource(name='Food', icon_source='Food.png'),
+             'workforce': Resource(name='Workforce', icon_source='Worker.png')}
 
 
 class CityState:
@@ -18,7 +19,8 @@ class CityState:
         self.name = name
         #  How many of each resource is stored
         self.resources = {'gold': 0,
-                          'food': 0}
+                          'food': 0,
+                          'workforce': 0}
     
     def load_from_file(self):
         """

@@ -113,7 +113,6 @@ class CellField:
         upper = [number-self.field_size-1 if number % self.field_size > 0 else None,
                  number-self.field_size,
                  number-self.field_size+1 if number % self.field_size < self.field_size-1 else None]
-        #  Check for values outside map
         r += map(lambda x: x if x and x > 0 else None, upper)
         if number % self.field_size > 0:
             r.append(number-1)
@@ -138,7 +137,7 @@ class Placeable:
         #  The ground this can be placed on
         self.acceptable_ground = acceptable_ground
         self.cell_field = None
-        self.position = None
+        self.number = None
         
     def get_placed(self, cell_field, number):
         """
