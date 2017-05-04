@@ -179,26 +179,10 @@ class Building(Placeable):
         self.effect = effect
         self.image_source = image_source
         self.widget = None
-        
-    def make_turn(self):
-        """
-        Make this building's turn.
-        :param cellField:
-        :return:
-        """
-        has_neighbours = False
-        for cell in self.cell_field.get_neighbours(self.number):
-            if self.cell_field[cell].building and \
-                    self.cell_field[cell].building.name == self.name:
-                has_neighbours = True
-                break
-        if has_neighbours:
-            print('Building {} at {} makes turn with its neighbour'.\
-                  format(self.name, self.number))
-            self.cell_field.city_state.resources['gold'] += 3
-        else:
-            print('Building {} at {} makes turn'.format(self.name, self.number))
-            self.cell_field.city_state.resources['gold'] += 2
 
     def __str__(self):
         return self.name
+
+    def make_turn(self):
+        raise NotImplementedError(
+            'Building is a base class to inherit from')

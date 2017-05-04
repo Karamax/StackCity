@@ -12,6 +12,7 @@ from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.label import Label
 
 # Game engine
+# from buildings import Building
 from cells import Cell, CellField, Building
 from city import CityState, resources as resource_reference
 from factories import NextItemFactory

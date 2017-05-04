@@ -7,19 +7,43 @@ creates them from stored data, but for now it's easier to implement them as
 classes than get boggled with writing a proper composition-based system.
 """
 
-from cells import Building
-
+from cells import Placeable, Building
+    
+    
 class Dwelling(Building):
     """
     A simple hut.
     It starts empty and produces one dweller (ie a unit of workforce) every ten
     turns. Five, if there is a neighbouring Dwelling. Placeable on living ground
     """
+    def __init__(self, max_dwellers=5, *args, **kwargs):
+        super(Dwelling, self).__init__(*args, **kwargs)
+        # Growth counter set to 10 to return the initial worker upon placement
+        self.growth_counter = 10
+        self.dwellers = 0
+        self.max_dwellers = 5
+        
     def make_turn(self):
-        pass
-    
+        if self.dwellers < self.max_dwellers:
+            has_neighbours = False
+            for cell in self.cell_field.get_neighbours(self.number):
+                if self.cell_field[cell].building and \
+                        self.cell_field[cell].building.name == self.name:
+                    has_neighbours = True
+                    break
+            if has_neighbours:
+                self.growth_counter += 2
+            else:
+                self.growth_counter += 1
+            if self.growth_counter >= 10:
+                self.dwellers += 1
+                self.cell_field.city_state.resources['workforce'] += 1
+                self.growth_counter -= 0
+            
     def __str__(self):
-        pass
+        return "{} ({}/{})".format(
+            self.name, self.dwellers, self.max_dwellers
+            )
     
     
 class FisherBoat(Building):

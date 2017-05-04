@@ -2,7 +2,8 @@
 A collection of factory objects
 """
 from misc import make_filled_shape, shape_copy
-from cells import Ground, Building
+from cells import Ground
+from buildings import Dwelling
 import random
 
 
@@ -90,10 +91,10 @@ class NextItemFactory:
     
     @staticmethod
     def create_house():
-        return Building(image_source='House.png',
-                        acceptable_ground=['living', 'empty'])
+        return Dwelling(image_source='House.png',
+                        acceptable_ground=['living'],
+                        max_dwellers=5)
 
     def create_item(self):
-        # return [[Ground(ground_type='water'), None, Ground(ground_type='water')]]
         next_thing = random.choice(self.possible_items)
         return self.maker_functions[next_thing]()
