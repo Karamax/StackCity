@@ -1,25 +1,21 @@
 #! /usr/bin/python3
 
-import kivy
 from kivy.app import App
 from kivy.animation import Animation
+from kivy.clock import Clock
+from kivy.properties import ListProperty, ObjectProperty, DictProperty,\
+    StringProperty
 from kivy.uix.widget import Widget
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.label import Label
-from kivy.properties import ListProperty, ObjectProperty, DictProperty,\
-    StringProperty
-from kivy.clock import Clock
 
-#Game engine
-from cells import Cell, CellField, Ground, Building
-from city import CityState
+# Game engine
+from cells import Cell, CellField, Building
+from city import CityState, resources as resource_reference
 from factories import NextItemFactory
 from misc import shape_copy, name_ground_list
-
-# Other libs
-import itertools
 
 
 class CityGame(Widget):
@@ -36,12 +32,14 @@ class CityGame(Widget):
         super(CityGame, self).__init__(**kwargs)
         self.cell_field = CellField(field_size=18)
         self.cell_field.connect_citystate(CityState())
+        self.resources = self.cell_field.city_state.resources
         self.next_item_factory = NextItemFactory(self.cell_field)
         Clock.schedule_once(self.init_game)
 
     def init_game(self, stuff):
         self.ids['field'].populate_field()
         self.bind(next_item=self.ids['next_item_box'].update_next_item)
+        self.bind(resources=self.ids['resource_box'].update_resources)
         self.start_turn()
 
     def start_turn(self):
@@ -201,7 +199,7 @@ class FieldCell(Widget):
         if self.cell.number:
             #  Neighborhood only checked for the tiles placed on map
             if self.cell.ground.ground_type == 'water':
-            #  Currently only waterfronts are supported
+                #  Currently only waterfronts are supported
                 source += self.get_neighbour_postfix()
                 for neighbour in App.get_running_app().root.ids['field'].get_cell_widgets(
                     App.get_running_app().root.cell_field.get_neighbours(self.cell.number)):
@@ -362,9 +360,9 @@ class GrabbableGroundGroup(Widget):
                     if self.cells[y][x]:
                         acceptor = App.get_running_app().root.ids['field'].\
                             get_cell_by_pos((
-                            self.center_x + self.offsets[y][x][0],
-                            self.center_y + self.offsets[y][x][1]
-                        ))
+                                self.center_x + self.offsets[y][x][0],
+                                self.center_y + self.offsets[y][x][1]
+                                ))
                         # Either released out of field or in incorrect pos
                         if not acceptor or not acceptor.cell.can_accept(self.cells[y][x]):
                             will_accept = False
@@ -405,15 +403,39 @@ class ItemMakerWidget(GridLayout):
         if self.next_item:
             self.remove_widget(self.next_item)
         next_item_object = App.get_running_app().root.next_item
-        if isinstance(next_item_object, Ground):
-            self.next_item = GrabbableCell(Cell(App.get_running_app().root.next_item))
-        elif isinstance(next_item_object, Building):
+        if isinstance(next_item_object, Building):
             self.next_item = GrabbableBuilding(App.get_running_app().root.next_item)
         elif isinstance(next_item_object, list):
             self.next_item = GrabbableGroundGroup(next_item_object)
         self.add_widget(self.next_item)
 
 
+class ResourceView(BoxLayout):
+    """
+    A view for a single resource
+    """
+    def __init__(self, resource_icon='Coins.png', **kwargs):
+        super(ResourceView, self).__init__(**kwargs)
+        self.ids['resource_icon'].source = resource_icon
+
+
+class ResourceBox(BoxLayout):
+    """
+    A box of ResourceViews
+    """
+    def __init__(self, *args, **kwargs):
+        super(ResourceBox, self).__init__(*args, **kwargs)
+        self.resource_fields = {}
+        for x in resource_reference.keys():
+            self.resource_fields[x] = ResourceView(
+                resource_icon=resource_reference[x].icon_source)
+            self.add_widget(self.resource_fields[x])
+            
+    def update_resources(self, ins, val):
+        for x in val.keys():
+            self.resource_fields[x].ids['resource_count'].text = str(val[x])
+        
+        
 class RightBlock(BoxLayout):
     pass
 

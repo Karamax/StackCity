@@ -28,6 +28,27 @@ CityGame:
 <GrabbableCell>:
     size: 32, 32
 
+<ResourceView>:
+    spacing: 20
+    orientation: 'horizontal'
+    Image:
+        id: resource_icon
+        size: 32, 32
+        source: None
+    Label:
+        id: resource_count
+        text: '0'
+
+<ResourceBox>:
+    canvas.before:
+        Color:
+            rgba: 0.2, 0.2, 0.2, 1
+        Rectangle:
+            size: self.size
+            pos: self.pos
+    orientation: 'vertical'
+    spacing: 5
+
 <CityGame>:
     canvas:
         Color:
@@ -93,11 +114,13 @@ CityGame:
                 text: 'Reroll item'
                 size_hint_y: None
                 size_y: 50
-            Label:
-                canvas.before:
-                    Color:
-                        rgba: 0.2, 0.2, 0.2, 1
-                    Rectangle:
-                        size: self.size
-                        pos: self.pos
-                text: str(root.resources)
+            ResourceBox
+                id: resource_box
+#            Label:
+#                canvas.before:
+#                    Color:
+#                        rgba: 0.2, 0.2, 0.2, 1
+#                    Rectangle:
+#                        size: self.size
+#                        pos: self.pos
+#                text: str(root.resources)
