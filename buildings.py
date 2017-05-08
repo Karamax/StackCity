@@ -37,7 +37,7 @@ class Dwelling(Building):
                 self.growth_counter += 1
             if self.growth_counter >= 10:
                 self.dwellers += 1
-                self.cell_field.city_state.resources['workforce'] += 1
+                self.city_state.resources['workforce'] += 1
                 self.growth_counter -= 0
             
     def __str__(self):

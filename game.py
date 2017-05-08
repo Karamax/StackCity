@@ -41,6 +41,8 @@ class CityGame(Widget):
         self.ids['field'].populate_field()
         self.bind(next_item=self.ids['next_item_box'].update_next_item)
         self.bind(resources=self.ids['resource_box'].update_resources)
+        # Setting up citystate for buildings
+        Building.city_state = self.cell_field.city_state
         self.start_turn()
 
     def start_turn(self):

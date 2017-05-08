@@ -70,13 +70,17 @@ class CellField:
     def __init__(self, field_size):
         self.field_size = field_size
         self.cells = [None for x in range(self.field_size*self.field_size)]
+        self.city_state = None
 
     def __getitem__(self, item):
         return self.cells[item]
     
     def connect_citystate(self, state):
         """
-        Connect to the CityState object
+        Connect to the CityState object.
+        The class variable assignment hack is not used here, because attaching
+        a city state may later mean more than just variable assignment in the
+        future.
         :param state:
         :return:
         """
@@ -171,7 +175,11 @@ class Building(Placeable):
     """
     A backend class for the building
     """
-
+    # A city state class variable. It is set by game.CityGame.init_game to allow
+    # all buildings easy access to the city state. Obviously, this implies that
+    # a CityState object must be a singleton
+    city_state = None
+    
     def __init__(self, image_source='House.png',
                  name='BaseBuilding', effect=None, **kwargs):
         super(Building, self).__init__(**kwargs)
@@ -184,5 +192,4 @@ class Building(Placeable):
         return self.name
 
     def make_turn(self):
-        raise NotImplementedError(
-            'Building is a base class to inherit from')
+        raise NotImplementedError('`Building` is a base class to inherit from')

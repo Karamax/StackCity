@@ -12,7 +12,11 @@ resources = {'gold': Resource(name='Gold', icon_source='Coins.png'),
 
 class CityState:
     """
-    An object that remembers the state of the entire city
+    An object that remembers the state of the entire city.
+    Resources amounts, research, foreign affairs, etc. all go here.
+    It is a singleton; two objects of this type cannot be used simultaneously
+    (although more can *exist in memory*, assuming CityGame object did not
+    assign more than one as active).
     """
     
     def __init__(self, name='Irkutsk'):
