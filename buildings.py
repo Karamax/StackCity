@@ -39,36 +39,77 @@ class Dwelling(Building):
                 self.dwellers += 1
                 self.city_state.resources['workforce'] += 1
                 self.growth_counter -= 0
+                
+    def on_placement(self):
+        pass
             
     def __str__(self):
         return "{} ({}/{})".format(
             self.name, self.dwellers, self.max_dwellers
             )
     
+
+class Workshop(Building):
+    """
+    A base class for workshops. Realizes the workforce logic.
+    """
+    def __init__(self, workers_required=1, **kwargs):
+        super(Workshop, self).__init__(**kwargs)
+        self.workers = 0
+        self.workers_required = workers_required
     
-class FisherBoat(Building):
+    def on_placement(self):
+        #  A workshop claims as many workers as it needs (or at least as many as
+        # it can) right after placement
+        if self.city_state.resources['workforce'] >= self.workers_required:
+            self.city_state.resources['workforce'] -= self.workers_required
+            self.workers = self.workers_required
+        elif self.city_state.resources['workforce'] > 0:
+            self.workers = self.city_state.resources['workforce']
+            self.city_state.resources['workforce'] = 0
+            
+    def work_efficiency(self):
+        """
+        Return the efficiency (ie percentage of optimal production) of this
+        workshop.
+        It can depend on factors such as the amount of workers, neighbouring
+        buildings, some city state variables and so on. Unless overridden, it's
+        self.workers/self.workers_required
+        :return:
+        """
+        return self.workers/self.workers_required
+            
+    def __str__(self):
+        # Mention if it's understaffed in the name
+        if self.workers == self.workers_required:
+            return self.name
+        elif self.workers > 0:
+            return '{} (short of workers)'.format(self.name)
+        else:
+            return '{} (unmanned)'.format(self.name)
+
+    
+class FisherBoat(Workshop):
     """
     A fisher boat.
     Requires a unit of workforce. Produces two food a turn. Placeable on water.
     """
+    
     def make_turn(self):
-        pass
+        if self.work_efficiency():
+            self.city_state.resources['food'] += 1
     
-    def __str__(self):
-        pass
-    
-    
-class Workshop(Building):
+
+class Smithery(Workshop):
     """
     A simple workshop.
     Requires two units of workforce. Produces one gold a turn. Placeable on
     an infrastructure ground
     """
     def make_turn(self):
-        pass
+        if self.work_efficiency() == 1:
+            self.city_state.resources['gold'] += 1
     
-    def __str__(self):
-        pass
     
     
 class Barracks(Building):
@@ -77,6 +118,9 @@ class Barracks(Building):
     doesn't do shit. Placeable on a military ground.
     """
     def make_turn(self):
+        pass
+    
+    def on_placement(self):
         pass
     
     def __str__(self):

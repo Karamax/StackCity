@@ -152,6 +152,8 @@ class Placeable:
         """
         self.cell_field = cell_field
         self.number = number
+        if hasattr(self, 'on_placement'):
+            self.on_placement()
 
 
 class Ground(Placeable):
@@ -173,7 +175,7 @@ class Ground(Placeable):
 
 class Building(Placeable):
     """
-    A backend class for the building
+    A backend base class for the buildings
     """
     # A city state class variable. It is set by game.CityGame.init_game to allow
     # all buildings easy access to the city state. Obviously, this implies that
@@ -192,4 +194,18 @@ class Building(Placeable):
         return self.name
 
     def make_turn(self):
+        """
+        What this building does every turn.
+        Consume resources, produce resources, whatever.
+        :return:
+        """
+        raise NotImplementedError('`Building` is a base class to inherit from')
+    
+    def on_placement(self):
+        """
+        What this building does when it is placed.
+        Maybe take some resources from workforce pool, see if it can merge with
+        the neighbouring buildings and so on.
+        :return:
+        """
         raise NotImplementedError('`Building` is a base class to inherit from')

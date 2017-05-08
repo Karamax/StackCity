@@ -3,7 +3,7 @@ A collection of factory objects
 """
 from misc import make_filled_shape, shape_copy
 from cells import Ground
-from buildings import Dwelling
+from buildings import Dwelling, FisherBoat, Smithery, Barracks
 import random
 
 
@@ -16,9 +16,13 @@ class NextItemFactory:
     def __init__(self, cell_field):
         self.cell_field = cell_field
         self.maker_functions = {'ground_block': self.create_ground_block,
-                                'house': self.create_house}
+                                'house': self.create_house,
+                                'boat': self.create_boat,
+                                'smithery': self.create_smithery}
         self.possible_items = ('ground_block',
-                               'house')
+                               'house',
+                               'boat',
+                               'smithery')
         
     @staticmethod
     def get_shape_list(size):
@@ -92,8 +96,23 @@ class NextItemFactory:
     @staticmethod
     def create_house():
         return Dwelling(image_source='House.png',
+                        name='A simple hut',
                         acceptable_ground=['living'],
                         max_dwellers=5)
+    
+    @staticmethod
+    def create_boat():
+        return FisherBoat(image_source='Boat.png',
+                          acceptable_ground=['water'],
+                          name='Fishing boat',
+                          workers_required=1)
+    
+    @staticmethod
+    def create_smithery():
+        return Smithery(image_source='Workshop.png',
+                        acceptable_ground=['military', 'infrastructure'],
+                        name='Smithery',
+                        workers_required=2)
 
     def create_item(self):
         next_thing = random.choice(self.possible_items)

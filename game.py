@@ -181,7 +181,6 @@ class FieldCell(Widget):
             self.create_tooltip()
 
     def create_tooltip(self):
-        print('Tooltip created')
         self.tooltip = Label(text='{0} on {1} ground'.format(self.cell.building,
                                                  self.cell.ground.ground_type),
                              x=self.x, y=self.y-20, color=(1, 0, 0, 1))
